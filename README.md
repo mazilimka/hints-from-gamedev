@@ -92,3 +92,67 @@ func _physics_process(delta):
 
 	move_and_slide()
 ```
+
+---
+
+### a hint tweens of mobile controls
+- game: [Crazy Snowflakes](https://github.com/mazilimka/Crazy-Snowflakes)
+- Godot: v4.3.stable.official [77dcf97d8]
+- **Don't forget to make rects inheritors of the CanvasLayer class!!!**
+```gdscript
+extends CharacterBody2D
+func mobile_controlls_tween():
+	get_tree().paused = true
+	
+	var tween1 := get_tree().create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS).set_loops(3)
+	tween1.tween_property(%LeftRect, "modulate", Color("a1ad0000"), 0.5)
+	tween1.tween_property(%LeftRect, "modulate", Color("a1ad00"), 0.5)
+	
+	var tween2 := get_tree().create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS).set_loops(3)
+	tween2.tween_property(%RightRect, "modulate", Color("e4a1d200"), 0.5)
+	tween2.tween_property(%RightRect, "modulate", Color("e4a1d2"), 0.5)
+	
+	var tween3 := get_tree().create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS).set_loops(3)
+	tween3.tween_property(%JumpRect, "modulate", Color("ff740200"), 0.5)
+	tween3.tween_property(%JumpRect, "modulate", Color("ff7402"), 0.5)
+	
+	await tween1.finished
+	await tween2.finished
+	await tween3.finished
+	
+	tween1 = get_tree().create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	tween1.tween_property(%LeftRect, "modulate", Color("a1ad0000"), 0.1)
+	
+	tween2 = get_tree().create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	tween2.tween_property(%RightRect, "modulate", Color("e4a1d200"), 0.1)
+	
+	tween3 = get_tree().create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	tween3.tween_property(%JumpRect, "modulate", Color("ff740200"), 0.1)
+	
+	await tween1.finished
+	await tween2.finished
+	await tween3.finished
+	
+	get_tree().paused = false
+```
+
+---
+
+### how to make sound settings
+- game: [Crazy Snowflakes](https://github.com/mazilimka/Crazy-Snowflakes)
+- Godot: v4.3.stable.official [77dcf97d8]
+- **it is such an implementation in terms of dependence on the `Player` (`Global.Player`), but it works for fast and short games**
+- it's the same with music
+
+in settings script:
+```gdscript
+func _ready():
+	sound_slider.volume = db_to_linear(Global.Player.broken_window_sound.volume_db)
+	sound_slider.min_volume = 0
+	sound_slider.max_volume = 1
+	sound_slider.step = 0.001 # for smoothness (may 0.01 or 0.1)
+
+func sound_changed(value: float):
+	Global.Player.broken_window_sound.volume_db = linear_to_db(value)
+
+```
